@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>호봉 계산기</title>
+    <title>동부고속 호봉 계산기</title>
     <style>
       body {
         font-family: 'Arial', sans-serif;
@@ -95,32 +95,32 @@
     </style>
   </head>
   <body>
-    <h1>호봉 계산기</h1>
+    <h1>동부고속 호봉 계산기</h1>
     <form id="calculatorForm">
       <label for="startYear">입사일:</label>
       <div class="date-inputs">
-        <input 
-          type="number" 
-          id="startYear" 
-          placeholder="년도" 
-          required 
-          min="1900" 
+        <input
+          type="number"
+          id="startYear"
+          placeholder="년도"
+          required
+          min="1900"
           max="2100"
         />
-        <input 
-          type="number" 
-          id="startMonth" 
-          placeholder="월" 
-          required 
-          min="1" 
+        <input
+          type="number"
+          id="startMonth"
+          placeholder="월"
+          required
+          min="1"
           max="12"
         />
-        <input 
-          type="number" 
-          id="startDay" 
-          placeholder="일" 
-          required 
-          min="1" 
+        <input
+          type="number"
+          id="startDay"
+          placeholder="일"
+          required
+          min="1"
           max="31"
         />
       </div>
@@ -185,17 +185,21 @@
 
     <script>
       // 입력 필드 간 자동 포커스 이동
-      document.getElementById('startYear').addEventListener('input', function(e) {
-        if (this.value.length >= 4) {
-          document.getElementById('startMonth').focus();
-        }
-      });
+      document
+        .getElementById('startYear')
+        .addEventListener('input', function (e) {
+          if (this.value.length >= 4) {
+            document.getElementById('startMonth').focus();
+          }
+        });
 
-      document.getElementById('startMonth').addEventListener('input', function(e) {
-        if (this.value.length >= 2) {
-          document.getElementById('startDay').focus();
-        }
-      });
+      document
+        .getElementById('startMonth')
+        .addEventListener('input', function (e) {
+          if (this.value.length >= 2) {
+            document.getElementById('startDay').focus();
+          }
+        });
 
       document
         .getElementById('calculatorForm')
@@ -206,7 +210,7 @@
           const startMonth = document.getElementById('startMonth').value - 1;
           const startDay = document.getElementById('startDay').value;
           const startDate = new Date(startYear, startMonth, startDay);
-          
+
           const probationPeriod = parseInt(
             document.getElementById('probationPeriod').value
           );
@@ -236,7 +240,8 @@
 
           // 발령-기준호봉 계산 (개월 단위)
           const appointmentToBase =
-            (baseSalaryDate.getFullYear() - appointmentDate.getFullYear()) * 12 +
+            (baseSalaryDate.getFullYear() - appointmentDate.getFullYear()) *
+              12 +
             (baseSalaryDate.getMonth() - appointmentDate.getMonth());
 
           // 기준호봉 계산
@@ -252,12 +257,12 @@
 
           // 현재 호봉 계산
           let currentSalary = 0;
-          
+
           // 수습기간 이전 3개월까지는 0호봉
-          const monthsSinceStart = 
+          const monthsSinceStart =
             (today.getFullYear() - startDate.getFullYear()) * 12 +
             (today.getMonth() - startDate.getMonth());
-            
+
           if (monthsSinceStart <= probationPeriod - 1) {
             currentSalary = 0;
           } else {
@@ -269,15 +274,17 @@
               // 최근 호봉연도 계산 (현재 연도의 4월 1일)
               let recentSalaryYear = new Date(today.getFullYear(), 3, 1);
               if (today.getMonth() < 3) {
-                recentSalaryYear.setFullYear(recentSalaryYear.getFullYear() - 1);
+                recentSalaryYear.setFullYear(
+                  recentSalaryYear.getFullYear() - 1
+                );
               }
 
               // 기준호봉일로부터 몇 년이 지났는지 계산
-              const yearsSinceBase = 
+              const yearsSinceBase =
                 recentSalaryYear.getFullYear() - baseSalaryDate.getFullYear();
 
               // 현재 호봉 = 기준호봉 + (경과년수 * 2)
-              currentSalary = baseSalary + (yearsSinceBase * 2);
+              currentSalary = baseSalary + yearsSinceBase * 2;
             }
           }
 
@@ -290,17 +297,28 @@
             appointmentToBase + '개월';
           document.getElementById('baseSalary').textContent =
             baseSalary + '호봉';
-          document.getElementById('currentDate').textContent = 
+          document.getElementById('currentDate').textContent =
             formatDate(today);
-          document.getElementById('totalMonths').textContent = 
+          document.getElementById('totalMonths').textContent =
             monthsSinceStart + '개월';
-          document.getElementById('recentSalaryYear').textContent = 
+          document.getElementById('recentSalaryYear').textContent =
             formatDate(today);
-          document.getElementById('baseSalaryYear').textContent = 
+          document.getElementById('baseSalaryYear').textContent =
             formatDate(baseSalaryDate);
-          document.getElementById('currentSalary').textContent = 
+          document.getElementById('currentSalary').textContent =
             currentSalary + '호봉';
         });
     </script>
+
+    <br />
+    <h2>호봉계산법</h2>
+    * 입사월부터 수습기간 3개월까지는 0호봉
+    <br />
+    * 수습기간이 끝난 4개월째부터는 1호봉 승호하며 정직원 발령
+    <br />
+    * 발령월부터 다음 4월 전달까지의 기간이 6개월이면 그대로 1호봉, 7~12개월이면
+    2호봉
+    <br />
+    * 그 후부터는 매년 4월에 2호봉씩 승호
   </body>
 </html>
