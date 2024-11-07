@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>동부고속 호봉 계산기</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 20px;
+        background-color: #f4f4f9;
+      }
+      h1 {
+        color: #007bff;
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 20px;
+        text-shadow: 1px 1px 2px #aaa;
+      }
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 1.5em;
+        }
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        color: #4caf50;
+        margin-top: 20px;
+      }
+      form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+      }
+      .date-inputs {
+        display: flex;
+        gap: 10px;
+        margin-top: 5px;
+      }
+      .date-inputs input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+      input[type='number'] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 15px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      @media (max-width: 600px) {
+        body {
+          padding: 10px;
+        }
+        button {
+          padding: 15px;
+        }
+        th,
+        td {
+          font-size: 14px;
+        }
+      }
+      .rules {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+      .rules ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      .rules li {
+        margin-bottom: 10px;
+        padding-left: 20px;
+        position: relative;
+      }
+      .rules li:before {
+        content: '•';
+        color: #007bff;
+        position: absolute;
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>동부고속 호봉계산기</h1>
+      <form id="calculatorForm">
+        <label for="startYear">입사일:</label>
+        <div class="date-inputs">
+          <input
+            type="number"
+            id="startYear"
+            placeholder="년도"
+            required
+            min="1900"
+            max="2100"
+          />
+          <input
+            type="number"
+            id="startMonth"
+            placeholder="월"
+            required
+            min="1"
+            max="12"
+          />
+          <input
+            type="number"
+            id="startDay"
+            placeholder="일"
+            required
+            min="1"
+            max="31"
+          />
+        </div>
+
+        <label for="probationPeriod">수습기간 (개월):</label>
+        <input type="number" id="probationPeriod" required />
+
+        <button type="submit">계산하기</button>
+      </form>
+
+      <h2>기준호봉</h2>
+      <table>
+        <tr>
+          <th>항목</th>
+          <th>값</th>
+        </tr>
+        <tr>
+          <td>발령일</td>
+          <td id="appointmentDate"></td>
+        </tr>
+        <tr>
+          <td>기준호봉일</td>
+          <td id="baseSalaryDate"></td>
+        </tr>
+        <tr>
+          <td>발령-기준호봉</td>
+          <td id="appointmentToBase"></td>
+        </tr>
+        <tr>
+          <td>기준호봉</td>
+          <td id="baseSalary"></td>
+        </tr>
+      </table>
+
+      <h2>현재호봉</h2>
+      <table>
+        <tr>
+          <th>항목</th>
+          <th>값</th>
+        </tr>
+        <tr>
+          <td>오늘날짜</td>
+          <td id="currentDate"></td>
+        </tr>
+        <tr>
+          <td>입사월-이번달</td>
+          <td id="totalMonths"></td>
+        </tr>
+        <tr>
+          <td>최근호봉연</td>
+          <td id="recentSalaryYear"></td>
+        </tr>
+        <tr>
+          <td>기준호봉연</td>
+          <td id="baseSalaryYear"></td>
+        </tr>
+        <tr>
+          <td>현재호봉</td>
+          <td id="currentSalary"></td>
+        </tr>
+      </table>
+
+      <h2>호봉계산법</h2>
+      <div class="rules">
+        <ul>
+          <li>입사월부터 수습기간 3개월까지는 0호봉</li>
+          <li>수습기간이 끝난 4개월째부터는 1호봉 승호하며 정직원 발령</li>
+          <li>
+            발령월부터 다음 4월 전달까지의 기간이 6개월이면 그대로 1호봉,
+            7~12개월이면 2호봉
+          </li>
+          <li>그 후부터는 매년 4월에 2호봉씩 승호</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      // 입력 필드 간 자동 포커스 이동
+      document
+        .getElementById('startYear')
+        .addEventListener('input', function (e) {
+          if (this.value.length >= 4) {
+            document.getElementById('startMonth').focus();
+          }
+        });
+
+      document
+        .getElementById('startMonth')
+        .addEventListener('input', function (e) {
+          if (this.value.length >= 2) {
+            document.getElementById('startDay').focus();
+          }
+        });
+
+      document
+        .getElementById('calculatorForm')
+        .addEventListener('submit', function (event) {
+          event.preventDefault();
+
+          const startYear = document.getElementById('startYear').value;
+          const startMonth = document.getElementById('startMonth').value - 1;
+          const startDay = document.getElementById('startDay').value;
+          const startDate = new Date(startYear, startMonth, startDay);
+
+          const probationPeriod = parseInt(
+            document.getElementById('probationPeriod').value
+          );
+
+          // 발령일 계산 (입사일 + 수습기간)
+          const appointmentDate = new Date(startDate);
+          appointmentDate.setMonth(
+            appointmentDate.getMonth() + probationPeriod
+          );
+
+          // 기준호봉일 계산 (매년 4월 1일)
+          let baseSalaryDate = new Date(appointmentDate.getFullYear(), 3, 1);
+          if (
+            appointmentDate.getMonth() >= 3 &&
+            appointmentDate.getDate() > 1
+          ) {
+            baseSalaryDate.setFullYear(baseSalaryDate.getFullYear() + 1);
+          }
+
+          // 날짜 포맷팅 함수
+          function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+          }
+
+          // 발령-기준호봉 계산 (개월 단위)
+          const appointmentToBase =
+            (baseSalaryDate.getFullYear() - appointmentDate.getFullYear()) *
+              12 +
+            (baseSalaryDate.getMonth() - appointmentDate.getMonth());
+
+          // 기준호봉 계산
+          let baseSalary;
+          if (appointmentToBase <= 6) {
+            baseSalary = 1; // 1~6개월 이하면 1호봉
+          } else {
+            baseSalary = 2; // 7~12개월이면 2호봉
+          }
+
+          // 현재 날짜 계산
+          const today = new Date();
+
+          // 현재 호봉 계산
+          let currentSalary = 0;
+
+          // 수습기간 이전 3개월까지는 0호봉
+          const monthsSinceStart =
+            (today.getFullYear() - startDate.getFullYear()) * 12 +
+            (today.getMonth() - startDate.getMonth());
+
+          if (monthsSinceStart <= probationPeriod - 1) {
+            currentSalary = 0;
+          } else {
+            // 수습기간이 끝나고 기준호봉일 이전까지는 1호봉
+            const today4_1 = new Date(today.getFullYear(), 3, 1);
+            if (today < baseSalaryDate) {
+              currentSalary = 1;
+            } else {
+              // 최근 호봉연도 계산 (현재 연도의 4월 1일)
+              let recentSalaryYear = new Date(today.getFullYear(), 3, 1);
+              if (today.getMonth() < 3) {
+                recentSalaryYear.setFullYear(
+                  recentSalaryYear.getFullYear() - 1
+                );
+              }
+
+              // 기준호봉일로부터 몇 년이 지났는지 계산
+              const yearsSinceBase =
+                recentSalaryYear.getFullYear() - baseSalaryDate.getFullYear();
+
+              // 현재 호봉 = 기준호봉 + (경과년수 * 2)
+              currentSalary = baseSalary + yearsSinceBase * 2;
+            }
+          }
+
+          // 값 업데이트
+          document.getElementById('appointmentDate').textContent =
+            formatDate(appointmentDate);
+          document.getElementById('baseSalaryDate').textContent =
+            formatDate(baseSalaryDate);
+          document.getElementById('appointmentToBase').textContent =
+            appointmentToBase + '개월';
+          document.getElementById('baseSalary').textContent =
+            baseSalary + '호봉';
+          document.getElementById('currentDate').textContent =
+            formatDate(today);
+          document.getElementById('totalMonths').textContent =
+            monthsSinceStart + '개월';
+          document.getElementById('recentSalaryYear').textContent =
+            formatDate(today);
+          document.getElementById('baseSalaryYear').textContent =
+            formatDate(baseSalaryDate);
+          document.getElementById('currentSalary').textContent =
+            currentSalary + '호봉';
+        });
+    </script>
+  </body>
+</html>
