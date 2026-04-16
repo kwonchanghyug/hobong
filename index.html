@@ -104,7 +104,7 @@
         }
         th,
         td {
-          font-size: 14px;d
+          font-size: 14px;
         }
       }
       .rules {
@@ -152,14 +152,6 @@
             required
             min="1"
             max="12"
-          />
-          <input
-            type="number"
-            id="startDay"
-            placeholder="일"
-            required
-            min="1"
-            max="31"
           />
         </div>
 
@@ -236,6 +228,14 @@
     </div>
 
     <script>
+      // 날짜 포맷팅 함수
+      function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
       // 입력 필드 간 자동 포커스 이동
       document
         .getElementById('startYear')
@@ -249,7 +249,7 @@
         .getElementById('startMonth')
         .addEventListener('input', function (e) {
           if (this.value.length >= 2) {
-            document.getElementById('startDay').focus();
+            document.getElementById('probationPeriod').focus();
           }
         });
 
@@ -258,10 +258,9 @@
         .addEventListener('submit', function (event) {
           event.preventDefault();
 
-          const startYear = document.getElementById('startYear').value;
-          const startMonth = document.getElementById('startMonth').value - 1;
-          const startDay = document.getElementById('startDay').value;
-          const startDate = new Date(startYear, startMonth, startDay);
+          const startYear = parseInt(document.getElementById('startYear').value);
+          const startMonth = parseInt(document.getElementById('startMonth').value) - 1;
+          const startDate = new Date(startYear, startMonth, 1);
 
           const probationPeriod = parseInt(
             document.getElementById('probationPeriod').value
@@ -278,14 +277,6 @@
           let baseSalaryDate = new Date(appointmentDate.getFullYear(), 3, 1);
           if (appointmentDate >= baseSalaryDate) {
             baseSalaryDate.setFullYear(baseSalaryDate.getFullYear() + 1);
-          }
-
-          // 날짜 포맷팅 함수
-          function formatDate(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
           }
 
           // 발령-기준호봉 계산 (개월 단위)
